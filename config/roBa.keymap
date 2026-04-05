@@ -3,27 +3,35 @@
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/pointing.h>
 
+#define MAC 0
+#define WIN 1
+#define NUM 2
+#define ARROW 3
+#define MOUSE 4
+#define SCROLL 5
+#define BT 6
+#define FUNC 7
+
 &mt {
     flavor = "balanced";
     quick-tap-ms = <0>;
 };
 
 &trackball {
-    automouse-layer = <4>;
-    scroll-layers = <5>;
+    automouse-layer = <MOUSE>;
+    scroll-layers = <SCROLL>;
 
-    // arrows {
-    //     layers = <3>;
-    //     bindings =
-    //         <&kp RIGHT_ARROW>,
-    //         <&kp LEFT_ARROW>,
-    //         <&kp UP_ARROW>,
-    //         <&kp DOWN_ARROW>;
-
-    //     tick = <10>;
-    //     wait-ms = <5>;
-    //     tap-ms = <5>;
-    // };
+    arrows {
+        layers = <ARROW>;
+        bindings =
+            <&kp LC(RIGHT)>,   // 右: 仮想デスクトップ右 (Mac: Ctrl+Right)
+            <&kp LC(LEFT)>,    // 左: 仮想デスクトップ左 (Mac: Ctrl+Left)
+            <&kp UP_ARROW>,
+            <&kp DOWN_ARROW>;
+        tick = <10>;
+        wait-ms = <5>;
+        tap-ms = <5>;
+    };
 };
 
 / {
@@ -40,11 +48,6 @@
             key-positions = <12 13>;
         };
 
-        muhennkann {
-            bindings = <&to_layer_0 INT_MUHENKAN>;
-            key-positions = <11 10>;
-        };
-
         double_quotation {
             bindings = <&kp DOUBLE_QUOTES>;
             key-positions = <20 21>;
@@ -54,52 +57,83 @@
             bindings = <&kp EQUAL>;
             key-positions = <24 25>;
         };
+
+        // 両手親指同時押し (Space + Enter) → BTレイヤー
+        bt_layer {
+            bindings = <&mo BT>;
+            key-positions = <34 37>;
+        };
     };
 
     macros {
-        to_layer_0: to_layer_0 {
-            compatible = "zmk,behavior-macro-one-param";
-            #binding-cells = <1>;
-            bindings = <&to 0 &macro_param_1to1 &kp MACRO_PLACEHOLDER>;
-            label = "TO_LAYER_0";
+        // BT選択 + Macレイヤーに切替
+        bt_mac: bt_mac {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&bt BT_SEL 0 &to MAC>;
+            label = "BT_MAC";
+        };
+
+        // BT選択 + Windowsレイヤーに切替
+        bt_win: bt_win {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&bt BT_SEL 1 &to WIN>;
+            label = "BT_WIN";
         };
     };
 
     behaviors {
-        lt_to_layer_0: lt_to_layer_0 {
+        // hold: Cmd / tap: 英数 (Mac左親指)
+        cmd_eisu: cmd_eisu {
             compatible = "zmk,behavior-hold-tap";
-            label = "LAYER_TAP_TO_0";
-            bindings = <&mo>, <&to_layer_0>;
-
+            label = "CMD_EISU";
+            bindings = <&kp>, <&kp>;
             #binding-cells = <2>;
             tapping-term-ms = <200>;
+            flavor = "balanced";
+        };
+
+        // hold: Ctrl / tap: 無変換 (Windows左親指)
+        ctrl_muhen: ctrl_muhen {
+            compatible = "zmk,behavior-hold-tap";
+            label = "CTRL_MUHEN";
+            bindings = <&kp>, <&kp>;
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            flavor = "balanced";
         };
     };
 
     keymap {
         compatible = "zmk,keymap";
 
-        default_layer {
+        // Layer 0: Mac
+        mac_layer {
             bindings = <
-&kp Q             &kp W         &kp E         &kp R                        &kp T                                                          &kp Y        &kp U  &lt 5 I    &kp O    &kp P
-&kp A             &kp S         &kp D         &kp F                        &kp G        &kp LS(LG(S))                      &kp MINUS      &kp H        &kp J  &kp K      &kp L    &kp SQT
-&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                        &kp B        &kp COLON                          &kp SEMICOLON  &kp N        &kp M  &kp COMMA  &kp DOT  &kp SLASH
-&kp LCTRL         &kp LEFT_WIN  &kp LEFT_ALT  &lt_to_layer_0 6 INT_HENKAN  &lt 2 SPACE  &lt_to_layer_0 3 INT_MUHENKAN      &kp BACKSPACE  &lt 1 ENTER                             &kp DEL
+&kp Q             &kp W         &kp E         &kp R                             &kp T                                                            &kp Y        &kp U  &kp I      &kp O    &kp P
+&kp A             &kp S         &kp D         &kp F                             &kp G        &kp LS(LG(S))                      &kp MINUS        &kp H        &kp J  &kp K      &lt SCROLL L  &kp SQT
+&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                             &kp B        &kp COLON                          &kp SEMICOLON    &kp N        &kp M  &kp COMMA  &kp DOT  &kp SLASH
+&kp LCTRL         &kp LEFT_ALT  &kp LEFT_GUI  &cmd_eisu LEFT_GUI INT_MUHENKAN   &lt NUM SPACE  &mo ARROW                        &kp BACKSPACE    &lt FUNC ENTER                          &kp DEL
             >;
 
             sensor-bindings = <&inc_dec_kp PG_UP PAGE_DOWN>;
         };
 
-        FUNCTION {
+        // Layer 1: Windows
+        win_layer {
             bindings = <
-&trans  &trans  &trans  &trans  &trans                       &kp F1  &kp F2  &kp F3  &kp F4  &kp F5
-&trans  &trans  &trans  &trans  &trans  &trans      &kp F13  &kp F6  &kp F7  &kp F8  &kp F9  &kp F10
-&trans  &trans  &trans  &trans  &trans  &trans      &trans   &trans  &trans  &trans  &trans  &kp F11
-&trans  &trans  &trans  &trans  &trans  &trans      &trans   &trans                          &kp F12
+&kp Q             &kp W         &kp E         &kp R                              &kp T                                                            &kp Y        &kp U  &kp I      &kp O    &kp P
+&kp A             &kp S         &kp D         &kp F                              &kp G        &kp LC(LS(S))                      &kp MINUS        &kp H        &kp J  &kp K      &lt SCROLL L  &kp SQT
+&mt LEFT_SHIFT Z  &kp X         &kp C         &kp V                              &kp B        &kp COLON                          &kp SEMICOLON    &kp N        &kp M  &kp COMMA  &kp DOT  &kp SLASH
+&kp LEFT_GUI      &kp LEFT_ALT  &kp LCTRL     &ctrl_muhen LCTRL INT_MUHENKAN     &lt NUM SPACE  &mo ARROW                        &kp BACKSPACE    &lt FUNC ENTER                          &kp DEL
             >;
+
+            sensor-bindings = <&inc_dec_kp PG_UP PAGE_DOWN>;
         };
 
-        NUM {
+        // Layer 2: NUM (共通)
+        num_layer {
             bindings = <
 &kp MINUS                   &kp KP_NUMBER_7  &kp KP_NUMBER_8  &kp KP_NUMBER_9  &kp PLUS                                                   &kp CARET         &kp AMPERSAND      &kp TILDE       &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
 &kp SLASH                   &kp KP_NUMBER_4  &kp KP_NUMBER_5  &kp KP_NUMBER_6  &kp ASTERISK  &kp LC(LA(KP_NUMBER_0))      &kp UNDERSCORE  &kp EXCLAMATION   &kp AT_SIGN        &kp HASH        &kp DOLLAR            &kp PERCENT
@@ -108,18 +142,20 @@
             >;
         };
 
-        ARROW {
+        // Layer 3: ARROW + トラックボールジェスチャー (共通)
+        arrow_layer {
             bindings = <
-&kp ESCAPE      &kp LC(LS(TAB))         &kp UP_ARROW    &kp LC(TAB)              &trans                       &trans  &trans  &trans  &trans  &trans
-&kp HOME        &kp LEFT_ARROW          &kp DOWN_ARROW  &kp RIGHT_ARROW          &kp END  &trans      &trans  &trans  &trans  &trans  &trans  &trans
-&kp LEFT_SHIFT  &kp LG(LS(LEFT_ARROW))  &trans          &kp LG(LS(RIGHT_ARROW))  &trans   &trans      &trans  &trans  &trans  &trans  &trans  &trans
-&trans          &trans                  &trans          &trans                   &trans   &trans      &trans  &trans                          &trans
+&kp ESCAPE      &kp LC(LS(TAB))  &kp UP_ARROW    &kp LC(TAB)      &trans                       &trans  &trans  &trans  &trans  &trans
+&kp HOME        &kp LEFT_ARROW   &kp DOWN_ARROW  &kp RIGHT_ARROW  &kp END  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&kp LEFT_SHIFT  &trans           &trans          &trans           &trans   &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans          &trans           &trans          &trans           &trans   &trans      &trans  &trans                          &trans
             >;
 
             sensor-bindings = <&inc_dec_kp LC(PAGE_UP) LC(PAGE_DOWN)>;
         };
 
-        MOUSE {
+        // Layer 4: MOUSE (自動)
+        mouse_layer {
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans    &trans    &trans    &trans
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &mkp MB1  &mkp MB3  &mkp MB2  &trans
@@ -128,7 +164,8 @@
             >;
         };
 
-        SCROLL {
+        // Layer 5: SCROLL
+        scroll_layer {
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
@@ -137,12 +174,23 @@
             >;
         };
 
-        layer_6 {
+        // Layer 6: BT設定 + Mac/Windows切替
+        bt_layer {
             bindings = <
-&trans  &trans        &trans        &trans        &trans                           &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
-&trans  &trans        &trans        &trans        &trans  &trans      &trans       &trans        &trans        &trans        &trans        &trans
-&trans  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans  &trans      &bootloader  &trans        &trans        &trans        &trans        &bt BT_CLR
-&trans  &trans        &trans        &trans        &trans  &trans      &trans       &trans                                                  &bt BT_CLR_ALL
+&trans  &trans  &trans  &trans  &trans                           &bt_mac       &bt_win       &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
+&trans  &trans  &trans  &trans  &trans  &trans      &trans       &trans        &trans        &trans        &trans        &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &bootloader  &trans        &trans        &trans        &trans        &bt BT_CLR
+&trans  &trans  &trans  &trans  &trans  &trans      &trans       &trans                                                  &bt BT_CLR_ALL
+            >;
+        };
+
+        // Layer 7: FUNCTION (共通)
+        func_layer {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans                       &kp F1  &kp F2  &kp F3  &kp F4  &kp F5
+&trans  &trans  &trans  &trans  &trans  &trans      &kp F13  &kp F6  &kp F7  &kp F8  &kp F9  &kp F10
+&trans  &trans  &trans  &trans  &trans  &trans      &trans   &trans  &trans  &trans  &trans  &kp F11
+&trans  &trans  &trans  &trans  &trans  &trans      &trans   &trans                          &kp F12
             >;
         };
     };
