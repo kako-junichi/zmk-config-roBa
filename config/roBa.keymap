@@ -2,6 +2,7 @@
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/pointing.h>
+#include <mouse-gesture.dtsi>
 
 #define MAC 0
 #define WIN 1
@@ -21,18 +22,28 @@
     automouse-layer = <MOUSE>;
     scroll-layers = <SCROLL>;
 
-    // トラックボールジェスチャー: ARROWレイヤーで有効
-    // 右: 仮想デスクトップ右, 左: 仮想デスクトップ左
-    arrows {
-        layers = <ARROW>;
-        bindings =
-            <&kp LC(RIGHT)>,
-            <&kp LC(LEFT)>,
-            <&kp UP_ARROW>,
-            <&kp DOWN_ARROW>;
-        tick = <10>;
-        wait-ms = <5>;
-        tap-ms = <5>;
+};
+
+// マウスジェスチャー定義
+&zip_mouse_gesture {
+    stroke-size = <300>;
+    enable-eager-mode;
+
+    // 仮想デスクトップ切替 (Mac: Ctrl+Left/Right)
+    desktop_right {
+        pattern = <GESTURE_RIGHT>;
+        bindings = <&kp LC(RIGHT)>;
+    };
+
+    desktop_left {
+        pattern = <GESTURE_LEFT>;
+        bindings = <&kp LC(LEFT)>;
+    };
+
+    // アプリ切替 (Mac: Cmd+Tab)
+    app_switch {
+        pattern = <GESTURE_UP>;
+        bindings = <&kp LG(TAB)>;
     };
 };
 
@@ -123,7 +134,7 @@
             bindings = <
 &kp Q      &kp W         &kp E      &kp R           &kp T                                        &kp Y           &kp U  &kp I      &kp O         &kp P
 &kp A      &kp S         &kp D      &kp F           &kp G          &kp PLUS       &kp MINUS      &kp H           &kp J  &kp K      &lt SCROLL L  &kp SQT
-&kp Z      &kp X         &kp C      &kp V           &kp B          &lt 3 TAB      &kp BACKSPACE  &kp N           &kp M  &kp COMMA  &kp DOT       &kp SLASH
+&kp Z      &kp X         &kp C      &kp V           &kp B          &mouse_gesture_kp 0 TAB  &kp BACKSPACE  &kp N           &kp M  &kp COMMA  &kp DOT       &kp SLASH
 &kp LCTRL  &kp LEFT_ALT  &kp LCTRL  &kp LEFT_SHIFT  &lt NUM SPACE  &kp LCMD       &kp RCMD       &lt FUNC ENTER                                  &kp DEL
             >;
 
