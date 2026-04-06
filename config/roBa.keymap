@@ -24,12 +24,18 @@
 
 };
 
+// mouse_gesture_kpにtapping-term-msを追加（v0.3-branch互換）
+&mouse_gesture_kp {
+    tapping-term-ms = <200>;
+    flavor = "balanced";
+};
+
 // マウスジェスチャー定義
 &zip_mouse_gesture {
     stroke-size = <300>;
     enable-eager-mode;
 
-    // 仮想デスクトップ切替 (Mac: Ctrl+Left/Right)
+    // 仮想デスクトップ切替
     desktop_right {
         pattern = <GESTURE_RIGHT>;
         bindings = <&kp LC(RIGHT)>;
@@ -40,10 +46,21 @@
         bindings = <&kp LC(LEFT)>;
     };
 
-    // アプリ切替 (Mac: Cmd+Tab)
-    app_switch {
+    // Switch Windows (Raycast: Ctrl+Alt+W)
+    switch_windows {
         pattern = <GESTURE_UP>;
-        bindings = <&kp LG(TAB)>;
+        bindings = <&kp LC(LA(W))>;
+    };
+
+    // ブラウザタブ切り替え
+    tab_right {
+        pattern = <GESTURE_DOWN GESTURE_RIGHT>;
+        bindings = <&kp LC(TAB)>;
+    };
+
+    tab_left {
+        pattern = <GESTURE_DOWN GESTURE_LEFT>;
+        bindings = <&kp LC(LS(TAB))>;
     };
 };
 
@@ -134,7 +151,7 @@
             bindings = <
 &kp Q      &kp W         &kp E      &kp R           &kp T                                        &kp Y           &kp U  &kp I      &kp O         &kp P
 &kp A      &kp S         &kp D      &kp F           &kp G          &kp PLUS       &kp MINUS      &kp H           &kp J  &kp K      &lt SCROLL L  &kp SQT
-&kp Z      &kp X         &kp C      &kp V           &kp B          &mouse_gesture_kp 0 TAB  &kp BACKSPACE  &kp N           &kp M  &kp COMMA  &kp DOT       &kp SLASH
+&kp Z      &kp X         &kp C      &kp V           &kp B          &mouse_gesture_kp 0 TAB  &kp BACKSPACE  &kp N           &mouse_gesture_kp 0 M  &mouse_gesture_kp 0 COMMA  &mouse_gesture_kp 0 DOT  &kp SLASH
 &kp LCTRL  &kp LEFT_ALT  &kp LCTRL  &kp LEFT_SHIFT  &lt NUM SPACE  &kp LCMD       &kp RCMD       &lt FUNC ENTER                                  &kp DEL
             >;
 
