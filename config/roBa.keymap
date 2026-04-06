@@ -25,9 +25,9 @@
         layers = <ARROW>;
         bindings =
             <&kp LC(RIGHT)>,
-            // 右: 仮想デスクトップ右 (Mac: Ctrl+Right),,,
+            // 右: 仮想デスクトップ右 (Mac: Ctrl+Right),,,,
             <&kp LC(LEFT)>,
-            // 左: 仮想デスクトップ左 (Mac: Ctrl+Left),,,
+            // 左: 仮想デスクトップ左 (Mac: Ctrl+Left),,,,
             <&kp UP_ARROW>,
             <&kp DOWN_ARROW>;
 
@@ -122,10 +122,10 @@
 
         mac_layer {
             bindings = <
-&kp Q      &kp W         &kp E      &kp R           &kp T                                       &kp Y           &kp U  &kp I      &kp O         &kp P
-&kp A      &kp S         &kp D      &kp F           &kp G          &kp PLUS      &kp MINUS      &kp H           &kp J  &kp K      &lt SCROLL L  &kp SQT
-&kp Z      &kp X         &kp C      &kp V           &kp B          &kp TAB       &kp BACKSPACE  &kp N           &kp M  &kp COMMA  &kp DOT       &kp SLASH
-&kp LCTRL  &kp LEFT_ALT  &kp LCTRL  &kp LEFT_SHIFT  &lt NUM SPACE  &kp LCMD      &kp RCMD       &lt FUNC ENTER                                  &kp DEL
+&kp Q      &kp W         &kp E      &kp R           &kp T                                        &kp Y           &kp U  &kp I      &kp O         &kp P
+&kp A      &kp S         &kp D      &kp F           &kp G          &kp PLUS       &kp MINUS      &kp H           &kp J  &kp K      &lt SCROLL L  &kp SQT
+&kp Z      &kp X         &kp C      &kp V           &kp B          &lt 3 TAB      &kp BACKSPACE  &kp N           &kp M  &kp COMMA  &kp DOT       &kp SLASH
+&kp LCTRL  &kp LEFT_ALT  &kp LCTRL  &kp LEFT_SHIFT  &lt NUM SPACE  &kp LCMD       &kp RCMD       &lt FUNC ENTER                                  &kp DEL
             >;
 
             sensor-bindings = <&inc_dec_kp PG_UP PAGE_DOWN>;
