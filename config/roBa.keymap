@@ -12,6 +12,9 @@
 #define SCROLL 5
 #define BT 6
 #define FUNC 7
+#define GEST_DESK 8
+#define GEST_WIN 9
+#define GEST_TAB 10
 
 &mt {
     flavor = "balanced";
@@ -21,7 +24,6 @@
 &trackball {
     automouse-layer = <MOUSE>;
     scroll-layers = <SCROLL>;
-
 };
 
 // mouse_gesture_kpにtapping-term-msを追加（v0.3-branch互換）
@@ -30,37 +32,79 @@
     flavor = "balanced";
 };
 
-// マウスジェスチャー定義
-&zip_mouse_gesture {
-    stroke-size = <300>;
-    enable-eager-mode;
+// ジェスチャー定義: 仮想デスクトップ移動 (M hold)
+/ {
+    zip_gesture_desktop: zip_gesture_desktop {
+        compatible = "zmk,input-processor-mouse-gesture";
+        #input-processor-cells = <0>;
+        stroke-size = <300>;
+        enable-eager-mode;
 
-    // 仮想デスクトップ切替
-    desktop_right {
-        pattern = <GESTURE_RIGHT>;
-        bindings = <&kp LC(RIGHT)>;
+        desktop_right {
+            pattern = <GESTURE_RIGHT>;
+            bindings = <&kp LC(RIGHT)>;
+        };
+
+        desktop_left {
+            pattern = <GESTURE_LEFT>;
+            bindings = <&kp LC(LEFT)>;
+        };
     };
 
-    desktop_left {
-        pattern = <GESTURE_LEFT>;
-        bindings = <&kp LC(LEFT)>;
+    // ジェスチャー定義: Switch Windows (,  hold)
+    zip_gesture_switch: zip_gesture_switch {
+        compatible = "zmk,input-processor-mouse-gesture";
+        #input-processor-cells = <0>;
+        stroke-size = <300>;
+        enable-eager-mode;
+
+        switch_windows {
+            pattern = <GESTURE_RIGHT>;
+            bindings = <&kp LC(LA(W))>;
+        };
+
+        switch_windows_left {
+            pattern = <GESTURE_LEFT>;
+            bindings = <&kp LC(LA(W))>;
+        };
     };
 
-    // Switch Windows (Raycast: Ctrl+Alt+W)
-    switch_windows {
-        pattern = <GESTURE_UP>;
-        bindings = <&kp LC(LA(W))>;
+    // ジェスチャー定義: タブ切り替え (. hold)
+    zip_gesture_tab: zip_gesture_tab {
+        compatible = "zmk,input-processor-mouse-gesture";
+        #input-processor-cells = <0>;
+        stroke-size = <300>;
+        enable-eager-mode;
+
+        tab_right {
+            pattern = <GESTURE_RIGHT>;
+            bindings = <&kp LC(TAB)>;
+        };
+
+        tab_left {
+            pattern = <GESTURE_LEFT>;
+            bindings = <&kp LC(LS(TAB))>;
+        };
+    };
+};
+
+// trackball_listenerにジェスチャープロセッサをレイヤーごとに設定
+&trackball_listener {
+    input-processors = <&zip_gesture_desktop>;
+
+    gestures_desktop {
+        layers = <GEST_DESK>;
+        input-processors = <&zip_gesture_desktop>;
     };
 
-    // ブラウザタブ切り替え
-    tab_right {
-        pattern = <GESTURE_DOWN GESTURE_RIGHT>;
-        bindings = <&kp LC(TAB)>;
+    gestures_switch {
+        layers = <GEST_WIN>;
+        input-processors = <&zip_gesture_switch>;
     };
 
-    tab_left {
-        pattern = <GESTURE_DOWN GESTURE_LEFT>;
-        bindings = <&kp LC(LS(TAB))>;
+    gestures_tab {
+        layers = <GEST_TAB>;
+        input-processors = <&zip_gesture_tab>;
     };
 };
 
@@ -89,7 +133,6 @@
         };
 
         // 両手親指同時押し (Space + Enter) → BTレイヤー
-
         bt_layer {
             bindings = <&mo BT>;
             key-positions = <34 37>;
@@ -98,7 +141,6 @@
 
     macros {
         // BT選択 + Macレイヤーに切替
-
         bt_mac: bt_mac {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
@@ -107,7 +149,6 @@
         };
 
         // BT選択 + Windowsレイヤーに切替
-
         bt_win: bt_win {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
@@ -118,24 +159,48 @@
 
     behaviors {
         // hold: Cmd / tap: 英数 (Mac左親指)
-
         cmd_eisu: cmd_eisu {
             compatible = "zmk,behavior-hold-tap";
             label = "CMD_EISU";
             bindings = <&kp>, <&kp>;
-
             #binding-cells = <2>;
             tapping-term-ms = <200>;
             flavor = "balanced";
         };
 
         // hold: Ctrl / tap: 無変換 (Windows左親指)
-
         ctrl_muhen: ctrl_muhen {
             compatible = "zmk,behavior-hold-tap";
             label = "CTRL_MUHEN";
             bindings = <&kp>, <&kp>;
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            flavor = "balanced";
+        };
 
+        // hold: ジェスチャーレイヤー + mouse_gesture / tap: キー
+        gest_desk_kp: gest_desk_kp {
+            compatible = "zmk,behavior-hold-tap";
+            label = "GEST_DESK_KP";
+            bindings = <&mo>, <&kp>;
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            flavor = "balanced";
+        };
+
+        gest_win_kp: gest_win_kp {
+            compatible = "zmk,behavior-hold-tap";
+            label = "GEST_WIN_KP";
+            bindings = <&mo>, <&kp>;
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            flavor = "balanced";
+        };
+
+        gest_tab_kp: gest_tab_kp {
+            compatible = "zmk,behavior-hold-tap";
+            label = "GEST_TAB_KP";
+            bindings = <&mo>, <&kp>;
             #binding-cells = <2>;
             tapping-term-ms = <200>;
             flavor = "balanced";
@@ -146,12 +211,11 @@
         compatible = "zmk,keymap";
 
         // Layer 0: Mac
-
         mac_layer {
             bindings = <
 &kp Q      &kp W         &kp E      &kp R           &kp T                                        &kp Y           &kp U  &kp I      &kp O         &kp P
 &kp A      &kp S         &kp D      &kp F           &kp G          &kp PLUS       &kp MINUS      &kp H           &kp J  &kp K      &lt SCROLL L  &kp SQT
-&kp Z      &kp X         &kp C      &kp V           &kp B          &mouse_gesture_kp 0 TAB  &kp BACKSPACE  &kp N           &mouse_gesture_kp 0 M  &mouse_gesture_kp 0 COMMA  &mouse_gesture_kp 0 DOT  &kp SLASH
+&kp Z      &kp X         &kp C      &kp V           &kp B          &kp TAB        &kp BACKSPACE  &kp N           &gest_desk_kp GEST_DESK M  &gest_win_kp GEST_WIN COMMA  &gest_tab_kp GEST_TAB DOT  &kp SLASH
 &kp LCTRL  &kp LEFT_ALT  &kp LCTRL  &kp LEFT_SHIFT  &lt NUM SPACE  &kp LCMD       &kp RCMD       &lt FUNC ENTER                                  &kp DEL
             >;
 
@@ -159,7 +223,6 @@
         };
 
         // Layer 1: Windows
-
         win_layer {
             bindings = <
 &kp Q             &kp W         &kp E      &kp R                           &kp T                                            &kp Y           &kp U  &kp I      &kp O         &kp P
@@ -172,7 +235,6 @@
         };
 
         // Layer 2: NUM (共通)
-
         num_layer {
             bindings = <
 &kp MINUS                &kp KP_NUMBER_1  &kp KP_NUMBER_2  &kp KP_NUMBER_3  &kp PLUS                                                      &kp CARET         &kp AMPERSAND      &kp TILDE       &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
@@ -182,8 +244,7 @@
             >;
         };
 
-        // Layer 3: ARROW + トラックボールジェスチャー (共通)
-
+        // Layer 3: ARROW (共通)
         arrow_layer {
             bindings = <
 &kp ESCAPE      &kp LC(LS(TAB))  &kp UP_ARROW    &kp LC(TAB)      &trans                       &trans  &trans  &trans  &trans  &trans
@@ -196,7 +257,6 @@
         };
 
         // Layer 4: MOUSE (自動)
-
         mouse_layer {
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans    &trans    &trans  &trans
@@ -207,7 +267,6 @@
         };
 
         // Layer 5: SCROLL
-
         scroll_layer {
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
@@ -218,7 +277,6 @@
         };
 
         // Layer 6: BT設定 + Mac/Windows切替
-
         bt_layer {
             bindings = <
 &trans  &trans  &trans  &trans  &trans                           &bt_mac  &bt_win  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4
@@ -229,13 +287,42 @@
         };
 
         // Layer 7: FUNCTION (共通)
-
         func_layer {
             bindings = <
 &trans  &trans  &trans  &trans  &trans                       &kp F1  &kp F2  &kp F3  &kp F4  &kp F5
 &trans  &trans  &trans  &trans  &trans  &trans      &kp F13  &kp F6  &kp F7  &kp F8  &kp F9  &kp F10
 &trans  &trans  &trans  &trans  &trans  &trans      &trans   &trans  &trans  &trans  &trans  &kp F11
 &trans  &trans  &trans  &trans  &trans  &trans      &trans   &trans                          &kp F12
+            >;
+        };
+
+        // Layer 8: ジェスチャー - 仮想デスクトップ (M hold)
+        gesture_desktop_layer {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                          &trans
+            >;
+        };
+
+        // Layer 9: ジェスチャー - Switch Windows (, hold)
+        gesture_switch_layer {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                          &trans
+            >;
+        };
+
+        // Layer 10: ジェスチャー - タブ切り替え (. hold)
+        gesture_tab_layer {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                          &trans
             >;
         };
     };
