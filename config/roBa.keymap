@@ -21,16 +21,15 @@
     automouse-layer = <MOUSE>;
     scroll-layers = <SCROLL>;
 
+    // トラックボールジェスチャー: ARROWレイヤーで有効
+    // 右: 仮想デスクトップ右, 左: 仮想デスクトップ左
     arrows {
         layers = <ARROW>;
         bindings =
             <&kp LC(RIGHT)>,
-            // 右: 仮想デスクトップ右 (Mac: Ctrl+Right),,,,
             <&kp LC(LEFT)>,
-            // 左: 仮想デスクトップ左 (Mac: Ctrl+Left),,,,
             <&kp UP_ARROW>,
             <&kp DOWN_ARROW>;
-
         tick = <10>;
         wait-ms = <5>;
         tap-ms = <5>;
