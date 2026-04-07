@@ -112,17 +112,17 @@
 &trackball_listener {
     gestures_desktop {
         layers = <GEST_DESK>;
-        input-processors = <&zip_gesture_desktop &zip_xy_scaler 0 1>;
+        input-processors = <&zip_gesture_desktop >;
     };
 
     gestures_switch {
         layers = <GEST_WIN>;
-        input-processors = <&zip_gesture_switch &zip_xy_scaler 0 1>;
+        input-processors = <&zip_gesture_switch >;
     };
 
     gestures_tab {
         layers = <GEST_TAB>;
-        input-processors = <&zip_gesture_tab &zip_xy_scaler 0 1>;
+        input-processors = <&zip_gesture_tab >;
     };
 };
 
