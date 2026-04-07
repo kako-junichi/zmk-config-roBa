@@ -26,12 +26,6 @@
     scroll-layers = <SCROLL>;
 };
 
-// mouse_gesture_kpにtapping-term-msを追加（ZMK main互換）
-&mouse_gesture_kp {
-    tapping-term-ms = <200>;
-    flavor = "balanced";
-};
-
 // ジェスチャー定義: 仮想デスクトップ移動 (M hold)
 / {
     zip_gesture_desktop: zip_gesture_desktop {
@@ -112,17 +106,17 @@
 &trackball_listener {
     gestures_desktop {
         layers = <GEST_DESK>;
-        input-processors = <&zip_gesture_desktop >;
+        input-processors = <&zip_gesture_desktop>;
     };
 
     gestures_switch {
         layers = <GEST_WIN>;
-        input-processors = <&zip_gesture_switch >;
+        input-processors = <&zip_gesture_switch>;
     };
 
     gestures_tab {
         layers = <GEST_TAB>;
-        input-processors = <&zip_gesture_tab >;
+        input-processors = <&zip_gesture_tab>;
     };
 };
 
