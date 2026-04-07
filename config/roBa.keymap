@@ -51,19 +51,19 @@
         };
     };
 
-    // ジェスチャー定義: Switch Windows (,  hold)
+    // ジェスチャー定義: Switch Windows (, hold)
     zip_gesture_switch: zip_gesture_switch {
         compatible = "zmk,input-processor-mouse-gesture";
         #input-processor-cells = <0>;
         stroke-size = <300>;
         enable-eager-mode;
 
-        switch_windows {
+        switch_windows_r {
             pattern = <GESTURE_RIGHT>;
             bindings = <&kp LC(LA(W))>;
         };
 
-        switch_windows_left {
+        switch_windows_l {
             pattern = <GESTURE_LEFT>;
             bindings = <&kp LC(LA(W))>;
         };
@@ -86,25 +86,43 @@
             bindings = <&kp LC(LS(TAB))>;
         };
     };
+
+    // zmk-listeners: レイヤー進入時にmouse_gesture_on/offを自動発火
+    layer_listeners {
+        compatible = "zmk,layer-listeners";
+
+        gesture_desktop {
+            layers = <GEST_DESK>;
+            bindings = <&mouse_gesture_on &mouse_gesture_off>;
+        };
+
+        gesture_switch {
+            layers = <GEST_WIN>;
+            bindings = <&mouse_gesture_on &mouse_gesture_off>;
+        };
+
+        gesture_tab {
+            layers = <GEST_TAB>;
+            bindings = <&mouse_gesture_on &mouse_gesture_off>;
+        };
+    };
 };
 
-// trackball_listenerにジェスチャープロセッサをレイヤーごとに設定
+// trackball_listenerにレイヤーごとのジェスチャープロセッサを設定
 &trackball_listener {
-    input-processors = <&zip_gesture_desktop>;
-
     gestures_desktop {
         layers = <GEST_DESK>;
-        input-processors = <&zip_gesture_desktop>;
+        input-processors = <&zip_gesture_desktop &zip_xy_scaler 0 1>;
     };
 
     gestures_switch {
         layers = <GEST_WIN>;
-        input-processors = <&zip_gesture_switch>;
+        input-processors = <&zip_gesture_switch &zip_xy_scaler 0 1>;
     };
 
     gestures_tab {
         layers = <GEST_TAB>;
-        input-processors = <&zip_gesture_tab>;
+        input-processors = <&zip_gesture_tab &zip_xy_scaler 0 1>;
     };
 };
 
@@ -178,7 +196,7 @@
             flavor = "balanced";
         };
 
-        // hold: ジェスチャーレイヤー + mouse_gesture / tap: キー
+        // hold: ジェスチャーレイヤー / tap: キー
         gest_desk_kp: gest_desk_kp {
             compatible = "zmk,behavior-hold-tap";
             label = "GEST_DESK_KP";
