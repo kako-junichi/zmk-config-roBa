@@ -11,6 +11,7 @@
 #define SCROLL 5
 #define BT 6
 #define FUNC 7
+#define GESTURE 8
 
 &mt {
     flavor = "balanced";
@@ -22,7 +23,7 @@
     scroll-layers = <SCROLL>;
 
     arrows {
-        layers = <ARROW>;
+        layers = <GESTURE>;
         bindings =
             <&kp LC(RIGHT)>,
             <&kp LC(LEFT)>,
@@ -98,6 +99,16 @@
             tapping-term-ms = <200>;
             flavor = "balanced";
         };
+
+        // hold: GESTUREレイヤー / tap: キー
+        gest_kp: gest_kp {
+            compatible = "zmk,behavior-hold-tap";
+            label = "GEST_KP";
+            bindings = <&mo>, <&kp>;
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            flavor = "balanced";
+        };
     };
 
     keymap {
@@ -108,7 +119,7 @@
             bindings = <
 &kp Q      &kp W         &kp E      &kp R           &kp T                                        &kp Y           &kp U  &kp I      &kp O         &kp P
 &kp A      &kp S         &kp D      &kp F           &kp G          &kp PLUS       &kp MINUS      &kp H           &kp J  &kp K      &lt SCROLL L  &kp SQT
-&kp Z      &kp X         &kp C      &kp V           &kp B          &lt ARROW TAB  &kp BACKSPACE  &kp N           &kp M  &kp COMMA  &kp DOT       &kp SLASH
+&kp Z      &kp X         &kp C      &kp V           &kp B          &kp TAB        &kp BACKSPACE  &kp N           &gest_kp GESTURE M  &gest_kp GESTURE COMMA  &gest_kp GESTURE DOT  &kp SLASH
 &kp LCTRL  &kp LEFT_ALT  &kp LCTRL  &kp LEFT_SHIFT  &lt NUM SPACE  &kp LCMD       &kp RCMD       &lt FUNC ENTER                                  &kp DEL
             >;
 
@@ -137,7 +148,7 @@
             >;
         };
 
-        // Layer 3: ARROW (トラックボール左右で仮想デスクトップ切替)
+        // Layer 3: ARROW (共通)
         arrow_layer {
             bindings = <
 &kp ESCAPE      &kp LC(LS(TAB))  &kp UP_ARROW    &kp LC(TAB)      &trans                       &trans  &trans  &trans  &trans  &trans
@@ -186,6 +197,16 @@
 &trans  &trans  &trans  &trans  &trans  &trans      &kp F13  &kp F6  &kp F7  &kp F8  &kp F9  &kp F10
 &trans  &trans  &trans  &trans  &trans  &trans      &trans   &trans  &trans  &trans  &trans  &kp F11
 &trans  &trans  &trans  &trans  &trans  &trans      &trans   &trans                          &kp F12
+            >;
+        };
+
+        // Layer 8: GESTURE (トラックボールジェスチャー用、MOUSE(4)より上)
+        gesture_layer {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                          &trans
             >;
         };
     };
