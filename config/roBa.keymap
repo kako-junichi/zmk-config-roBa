@@ -32,7 +32,7 @@
     zip_gesture_desktop: zip_gesture_desktop {
         compatible = "zmk,input-processor-mouse-gesture";
         #input-processor-cells = <0>;
-        stroke-size = <300>;
+        stroke-size = <150>;
         enable-eager-mode;
 
         desktop_right {
@@ -50,7 +50,7 @@
     zip_gesture_switch: zip_gesture_switch {
         compatible = "zmk,input-processor-mouse-gesture";
         #input-processor-cells = <0>;
-        stroke-size = <300>;
+        stroke-size = <150>;
         enable-eager-mode;
 
         switch_windows_r {
@@ -68,7 +68,7 @@
     zip_gesture_tab: zip_gesture_tab {
         compatible = "zmk,input-processor-mouse-gesture";
         #input-processor-cells = <0>;
-        stroke-size = <300>;
+        stroke-size = <150>;
         enable-eager-mode;
 
         tab_right {
