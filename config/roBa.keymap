@@ -29,7 +29,7 @@
             <&kp LC(LEFT)>,
             <&kp LC(UP)>,
             <&kp LC(DOWN)>;
-        tick = <100>;
+        tick = <300>;
         wait-ms = <5>;
         tap-ms = <5>;
     };
