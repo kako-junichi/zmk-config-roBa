@@ -2,6 +2,7 @@
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/pointing.h>
+#include <mouse-gesture.dtsi>
 
 #define MAC 0
 #define WIN 1
@@ -11,7 +12,9 @@
 #define SCROLL 5
 #define BT 6
 #define FUNC 7
-#define GESTURE 8
+#define GEST_DESK 8
+#define GEST_WIN 9
+#define GEST_TAB 10
 
 &mt {
     flavor = "balanced";
@@ -21,17 +24,105 @@
 &trackball {
     automouse-layer = <MOUSE>;
     scroll-layers = <SCROLL>;
+};
 
-    arrows {
-        layers = <GESTURE>;
-        bindings =
-            <&kp LC(RIGHT)>,
-            <&kp LC(LEFT)>,
-            <&kp UP_ARROW>,
-            <&kp DOWN_ARROW>;
-        tick = <10>;
-        wait-ms = <5>;
-        tap-ms = <5>;
+// mouse_gesture_kpにtapping-term-msを追加（ZMK main互換）
+&mouse_gesture_kp {
+    tapping-term-ms = <200>;
+    flavor = "balanced";
+};
+
+// ジェスチャー定義: 仮想デスクトップ移動 (M hold)
+/ {
+    zip_gesture_desktop: zip_gesture_desktop {
+        compatible = "zmk,input-processor-mouse-gesture";
+        #input-processor-cells = <0>;
+        stroke-size = <300>;
+        enable-eager-mode;
+
+        desktop_right {
+            pattern = <GESTURE_RIGHT>;
+            bindings = <&kp LC(RIGHT)>;
+        };
+
+        desktop_left {
+            pattern = <GESTURE_LEFT>;
+            bindings = <&kp LC(LEFT)>;
+        };
+    };
+
+    // ジェスチャー定義: Switch Windows (, hold)
+    zip_gesture_switch: zip_gesture_switch {
+        compatible = "zmk,input-processor-mouse-gesture";
+        #input-processor-cells = <0>;
+        stroke-size = <300>;
+        enable-eager-mode;
+
+        switch_windows_r {
+            pattern = <GESTURE_RIGHT>;
+            bindings = <&kp LC(LA(W))>;
+        };
+
+        switch_windows_l {
+            pattern = <GESTURE_LEFT>;
+            bindings = <&kp LC(LA(W))>;
+        };
+    };
+
+    // ジェスチャー定義: タブ切り替え (. hold)
+    zip_gesture_tab: zip_gesture_tab {
+        compatible = "zmk,input-processor-mouse-gesture";
+        #input-processor-cells = <0>;
+        stroke-size = <300>;
+        enable-eager-mode;
+
+        tab_right {
+            pattern = <GESTURE_RIGHT>;
+            bindings = <&kp LC(TAB)>;
+        };
+
+        tab_left {
+            pattern = <GESTURE_LEFT>;
+            bindings = <&kp LC(LS(TAB))>;
+        };
+    };
+
+    // zmk-listeners: レイヤー進入時にmouse_gesture on/off
+    layer_listeners {
+        compatible = "zmk,layer-listeners";
+
+        gesture_desktop {
+            layers = <GEST_DESK>;
+            bindings = <&mouse_gesture_on &mouse_gesture_off>;
+        };
+
+        gesture_switch {
+            layers = <GEST_WIN>;
+            bindings = <&mouse_gesture_on &mouse_gesture_off>;
+        };
+
+        gesture_tab {
+            layers = <GEST_TAB>;
+            bindings = <&mouse_gesture_on &mouse_gesture_off>;
+        };
+    };
+};
+
+// trackball_listenerにレイヤーごとのジェスチャープロセッサ
+&trackball_listener {
+    gestures_desktop {
+        layers = <GEST_DESK>;
+        input-processors = <&zip_gesture_desktop &zip_xy_scaler 0 1>;
+    };
+
+    gestures_switch {
+        layers = <GEST_WIN>;
+        input-processors = <&zip_gesture_switch &zip_xy_scaler 0 1>;
+    };
+
+    gestures_tab {
+        layers = <GEST_TAB>;
+        input-processors = <&zip_gesture_tab &zip_xy_scaler 0 1>;
     };
 };
 
@@ -100,7 +191,7 @@
             flavor = "balanced";
         };
 
-        // hold: GESTUREレイヤー / tap: キー
+        // hold: ジェスチャーレイヤー / tap: キー
         gest_kp: gest_kp {
             compatible = "zmk,behavior-hold-tap";
             label = "GEST_KP";
@@ -119,7 +210,7 @@
             bindings = <
 &kp Q      &kp W         &kp E      &kp R           &kp T                                        &kp Y           &kp U  &kp I      &kp O         &kp P
 &kp A      &kp S         &kp D      &kp F           &kp G          &kp PLUS       &kp MINUS      &kp H           &kp J  &kp K      &lt SCROLL L  &kp SQT
-&kp Z      &kp X         &kp C      &kp V           &kp B          &kp TAB        &kp BACKSPACE  &kp N           &gest_kp GESTURE M  &gest_kp GESTURE COMMA  &gest_kp GESTURE DOT  &kp SLASH
+&kp Z      &kp X         &kp C      &kp V           &kp B          &kp TAB        &kp BACKSPACE  &kp N           &gest_kp GEST_DESK M  &gest_kp GEST_WIN COMMA  &gest_kp GEST_TAB DOT  &kp SLASH
 &kp LCTRL  &kp LEFT_ALT  &kp LCTRL  &kp LEFT_SHIFT  &lt NUM SPACE  &kp LCMD       &kp RCMD       &lt FUNC ENTER                                  &kp DEL
             >;
 
@@ -200,8 +291,28 @@
             >;
         };
 
-        // Layer 8: GESTURE (トラックボールジェスチャー用、MOUSE(4)より上)
-        gesture_layer {
+        // Layer 8: ジェスチャー - 仮想デスクトップ (M hold)
+        gesture_desktop_layer {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                          &trans
+            >;
+        };
+
+        // Layer 9: ジェスチャー - Switch Windows (, hold)
+        gesture_switch_layer {
+            bindings = <
+&trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans                          &trans
+            >;
+        };
+
+        // Layer 10: ジェスチャー - タブ切り替え (. hold)
+        gesture_tab_layer {
             bindings = <
 &trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &trans  &trans
 &trans  &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans  &trans  &trans  &trans
