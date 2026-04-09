@@ -67,6 +67,7 @@
     excluded-positions = <
         18 // J (左クリック)
         19 // K (右クリック)
+        21 // - (Next Display)
         30 // M (戻る)
         32 // . (進む)
     >;
