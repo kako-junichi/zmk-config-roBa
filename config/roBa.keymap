@@ -55,7 +55,7 @@
     zip_gesture_tab: zip_gesture_tab {
         compatible = "zmk,input-processor-mouse-gesture";
         #input-processor-cells = <0>;
-        stroke-size = <150>;
+        stroke-size = <100>;
         enable-eager-mode;
 
         tab_right {
