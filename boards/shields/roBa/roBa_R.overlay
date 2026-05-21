@@ -66,7 +66,8 @@
 &zip_temp_layer {
     excluded-positions = <
         18 // J (左クリック)
-        19 // K (右クリック)
+        19 // K (中央クリック)
+        20 // L (右クリック)
         21 // - (Next Display)
         30 // M (戻る)
         32 // . (進む)
